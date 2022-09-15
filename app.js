@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes/router');
+const userRouter = require('./routes/user');
 
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
@@ -15,6 +15,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(express.json())
-app.use('/', router);
+app.use('/', userRouter);
 
 app.listen(PORT);
