@@ -41,12 +41,15 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     {
       new: true,
-      runValidators: true
+      runValidators: true,
+      upsert: true
     }
   )
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
     .catch(err => {
+      console.log(err.name);
+
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
         return;
