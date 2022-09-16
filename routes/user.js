@@ -45,7 +45,15 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body; // получим из объекта запроса имя и описание пользователя
 
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: true // если пользователь не найден, он будет создан
+    }
+  )
     .then(user => res.send({ data: user }))
     // данные не записались, вернём ошибку
     .catch(err => {
@@ -63,7 +71,15 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    {
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: true // если пользователь не найден, он будет создан
+    }
+  )
     .then(user => res.send({ data: user }))
     // данные не записались, вернём ошибку
     .catch(err => {
