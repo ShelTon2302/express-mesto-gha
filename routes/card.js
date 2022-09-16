@@ -30,6 +30,10 @@ module.exports.deleteCard = (req, res) => {
     .then(card => res.send({ deletedcard: card }))
     .catch(err => {
       if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+        return;
+      }
+      if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
@@ -49,8 +53,6 @@ module.exports.likeCard = (req, res) => {
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
     .catch(err => {
-      console.log(err.name);
-
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
         return;
@@ -75,11 +77,11 @@ module.exports.dislikeCard = (req, res) => {
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
     .catch(err => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
         return;
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
