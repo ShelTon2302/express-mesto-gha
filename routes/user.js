@@ -51,7 +51,6 @@ module.exports.updateUser = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: true // если пользователь не найден, он будет создан
     }
   )
     .then(user => res.send({ data: user }))
@@ -77,7 +76,6 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: true // если пользователь не найден, он будет создан
     }
   )
     .then(user => res.send({ data: user }))

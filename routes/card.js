@@ -39,7 +39,10 @@ module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardid,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
+    {
+      new: true,
+      runValidators: true
+    }
   )
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
@@ -59,7 +62,10 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardid,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    {
+      new: true,
+      runValidators: true
+     }
   )
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
