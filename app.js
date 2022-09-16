@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router, (req, res, next) => {
-  res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT);
