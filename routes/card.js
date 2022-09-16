@@ -26,6 +26,7 @@ module.exports.createCard = (req, res) => {
 module.exports.deleteCard = (req, res) => {
 
   Card.findByIdAndRemove(req.params.cardid)
+    .orFail()
     .then(card => res.send({ deletedcard: card }))
     .catch(err => {
       if (err.name === 'CastError') {
@@ -44,7 +45,7 @@ module.exports.likeCard = (req, res) => {
       runValidators: true
     }
   )
-    .orFail(() => console.log('error'))
+    .orFail()
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
     .catch(err => {
@@ -70,6 +71,7 @@ module.exports.dislikeCard = (req, res) => {
       runValidators: true
      }
   )
+    .orFail()
     .then(card => res.send({ card }))
     // данные не записались, вернём ошибку
     .catch(err => {
