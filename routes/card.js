@@ -24,6 +24,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
+
   Card.findByIdAndRemove(req.params.cardid)
     .then(card => res.send({ deletedcard: card }))
     .catch(err => {
@@ -35,14 +36,12 @@ module.exports.deleteCard = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  console.log(req.params.cardid);
   Card.findByIdAndUpdate(
     req.params.cardid,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { $addToSet: { likes: req.user._id } },
     {
       new: true,
-      runValidators: true,
-      upsert: true
+      runValidators: true
     }
   )
     .then(card => res.send({ card }))
