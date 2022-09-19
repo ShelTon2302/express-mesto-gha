@@ -3,28 +3,28 @@ const mongoose = require('mongoose');
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: [true, 'Необходимо заполнить название карточки'],
     minlength: 2,
-    maxlength: 30
+    maxlength: 30,
   },
   link: {
     type: String,
-    required: true
+    required: [true, 'Необходимо заполнить ссылку на картинку карточки'],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true
+    required: true,
   },
   likes: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'user',
-    default: []
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 // создаём модель и экспортируем её

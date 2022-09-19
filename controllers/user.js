@@ -1,44 +1,48 @@
 const User = require('../models/user');
+const { ERROR_CODE, ERROR_NOTFOUND, ERROR_DEFAULT } = require('../utils/error');
 
 module.exports.getAllUser = (req, res) => {
   User.find({})
-    .then(users => res.send({ users }))
-    .catch(err => {
-      res.status(500).send({ message: 'Ошибка загрузки списка пользователей' })});
+    .then((users) => res.send({ users }))
+    .catch(() => {
+      res.status(ERROR_DEFAULT).send({ message: 'Ошибка загрузки списка пользователей' });
+    });
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.id)
-    .then(user => res.send({
+    .then((user) => res.send({
       name: user.name,
       about: user.about,
       avatar: user.avatar,
-      _id: user._id
+      _id: user._id,
     }))
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
         return;
       }
       if (err.name === 'TypeError') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
-      res.status(500).send({ message: 'Ошибка загрузки пользователя' })});
+      res.status(ERROR_DEFAULT).send({ message: 'Ошибка загрузки пользователя' });
+    });
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar }) // создадим документ на основе пришедших данных
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     // данные не записались, вернём ошибку
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
         return;
       }
-      res.status(500).send({ message: 'Ошибка создания пользователя' })});
+      res.status(ERROR_NOTFOUND).send({ message: 'Ошибка создания пользователя' });
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -50,20 +54,21 @@ module.exports.updateUser = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     // данные не записались, вернём ошибку
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
         return;
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
-      res.status(500).send({ message: 'Ошибка обновления данных пользователя' })});
+      res.status(ERROR_DEFAULT).send({ message: 'Ошибка обновления данных пользователя' });
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -75,19 +80,19 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-    }
+    },
   )
-    .then(user => res.send({ data: user }))
+    .then((user) => res.send({ data: user }))
     // данные не записались, вернём ошибку
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
         return;
       }
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
-      res.status(500).send({ message: 'Ошибка обновления данных аватара' })});
-
+      res.status(ERROR_DEFAULT).send({ message: 'Ошибка обновления данных аватара' });
+    });
 };
