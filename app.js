@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const router = require('./routes/routes');
+const cardRouter = require('./routes/card');
+const userRouter = require('./routes/user');
+
 
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
@@ -24,7 +26,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', router, (req, res, next) => {
+app.use('/', userRouter, (req, res, next) => {
+  next();
+});
+
+app.use('/', cardRouter, (req, res, next) => {
+  next();
+});
+
+app.use('/', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
