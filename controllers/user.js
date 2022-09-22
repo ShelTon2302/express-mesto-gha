@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs'); // импортируем bcrypt
 const User = require('../models/user');
 const { ERROR_CODE, ERROR_NOTFOUND, ERROR_DEFAULT } = require('../utils/error');
 
@@ -31,18 +32,27 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar }) // создадим документ на основе пришедших данных
-    .then((user) => res.send({ data: user }))
-    // данные не записались, вернём ошибку
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        return;
-      }
-      res.status(ERROR_NOTFOUND).send({ message: 'Ошибка создания пользователя' });
-    });
+  if (User.validationEmail(req.body.email)) {
+    bcrypt.hash(req.body.password, 10)
+      .then((hash) => User.create({
+        email: req.body.email,
+        password: hash,
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+      })) // создадим документ на основе пришедших данных
+      .then((user) => res.send({ user }))
+      // данные не записались, вернём ошибку
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+          return;
+        }
+        res.status(ERROR_NOTFOUND).send({ message: 'Ошибка создания пользователя' });
+      });
+  } else {
+    res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные 11' });
+  }
 };
 
 module.exports.updateUser = (req, res) => {

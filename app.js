@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const validator = require('validator');
 const cardRouter = require('./routes/card');
 const userRouter = require('./routes/user');
 const { ERROR_NOTFOUND } = require('./utils/error');
@@ -15,11 +16,12 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(express.json());
 
+console.log(validator.isEmail('foobar.com'));
+
 app.use((req, res, next) => {
   req.user = {
     _id: '63234ffacf2ccf2d9d528edf', //  вставьте сюда _id созданного в предыдущем пункте пользователя
   };
-
   next();
 });
 
