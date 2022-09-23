@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { ERROR_CODE, ERROR_NOTFOUND, ERROR_DEFAULT } = require('../utils/error');
 
@@ -31,6 +32,26 @@ module.exports.getUser = (req, res) => {
     });
 };
 
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      })
+        .end();
+    })
+    .catch((err) => {
+      // ошибка аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
 module.exports.createUser = (req, res) => {
   if (User.validationEmail(req.body.email)) {
     bcrypt.hash(req.body.password, 10)
@@ -51,7 +72,7 @@ module.exports.createUser = (req, res) => {
         res.status(ERROR_NOTFOUND).send({ message: 'Ошибка создания пользователя' });
       });
   } else {
-    res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные 11' });
+    res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
   }
 };
 

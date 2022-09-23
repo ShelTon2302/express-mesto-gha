@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const validator = require('validator');
+require('dotenv').config();
 const cardRouter = require('./routes/card');
 const userRouter = require('./routes/user');
 const { ERROR_NOTFOUND } = require('./utils/error');
@@ -15,8 +15,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(express.json());
-
-console.log(validator.isEmail('foobar.com'));
 
 app.use((req, res, next) => {
   req.user = {
