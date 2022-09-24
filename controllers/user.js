@@ -33,9 +33,9 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  return User.findOne({ email }).select('+password')
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
       res.cookie('jwt', token, {

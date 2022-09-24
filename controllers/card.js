@@ -24,9 +24,11 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardid)
+  Card.findOneAndRemove({ _id: req.params.cardid, owner: req.user._id })
     .orFail()
-    .then((card) => res.send({ deletedcard: card }))
+    .then((card) => {
+      res.send({ card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });

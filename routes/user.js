@@ -1,15 +1,18 @@
 const userRouter = require('express').Router(); // создали роутер
+const auth = require('../middlewares/auth');
 const {
   getAllUser, getUser, login, createUser, updateUser, updateAvatar,
 } = require('../controllers/user');
 
+userRouter.post('/signin', login);
+
+userRouter.post('/signup', createUser);
+
+userRouter.use(auth);
+
 userRouter.get('/users', getAllUser);
 
 userRouter.get('/users/:id', getUser);
-
-userRouter.get('/signin', login);
-
-userRouter.post('/signup', createUser);
 
 userRouter.patch('/users/me', updateUser);
 
