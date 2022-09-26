@@ -1,13 +1,14 @@
 const Card = require('../models/card');
-const { ERROR_CODE, ERROR_NOTFOUND, ERROR_DEFAULT } = require('../utils/error');
+const NotFoundError = require('../errors/not-found-error');
+const RequestError = require('../errors/request-error');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ cards }))
-    .catch(() => res.status(ERROR_DEFAULT).send({ message: 'Ошибка загрузки списка карточек' }));
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
   const { name, link } = req.body; // получим из объекта запроса имя и описание пользователя
 
@@ -16,14 +17,13 @@ module.exports.createCard = (req, res) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        return;
+        throw new RequestError('Переданы некорректные данные');
       }
-      res.status(ERROR_DEFAULT).send({ message: 'Ошибка создания карточки' });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findOneAndRemove({ _id: req.params.cardid, owner: req.user._id })
     .orFail()
     .then((card) => {
@@ -31,18 +31,16 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        return;
+        throw new RequestError('Переданы некорректные данные');
       }
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        throw new NotFoundError('Запрашиваемая карточка не найдена');
       }
-      res.status(ERROR_DEFAULT).send({ message: 'Ошибка удаления карточки' });
-    });
+    })
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardid,
     { $addToSet: { likes: req.user._id } },
@@ -56,15 +54,13 @@ module.exports.likeCard = (req, res) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        return;
+        throw new RequestError('Переданы некорректные данные');
       }
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        throw new NotFoundError('Запрашиваемая карточка не найдена');
       }
-      res.status(ERROR_DEFAULT).send({ message: 'Ошибка изменения свойства Like карточки' });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -81,13 +77,10 @@ module.exports.dislikeCard = (req, res) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-        return;
+        throw new RequestError('Переданы некорректные данные');
       }
       if (err.name === 'DocumentNotFoundError') {
-        res.status(ERROR_NOTFOUND).send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+        throw new NotFoundError('Запрашиваемая карточка не найдена');
       }
-      res.status(ERROR_DEFAULT).send({ message: 'Ошибка изменения свойства Like карточки' });
     });
 };

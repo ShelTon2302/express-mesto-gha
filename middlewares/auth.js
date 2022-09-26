@@ -1,12 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { ERROR_AUTH } = require('../utils/error');
+const AuthError = require('../errors/auth-error');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
-    return res
-      .status(ERROR_AUTH)
-      .send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   }
 
   let payload;
@@ -14,12 +12,10 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    return res
-      .status(ERROR_AUTH)
-      .send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходима авторизация');
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
 
-  next(); // пропускаем запрос дальше
+  return next(); // пропускаем запрос дальше
 };
