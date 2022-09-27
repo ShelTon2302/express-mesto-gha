@@ -50,9 +50,10 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       })
-        .end()
-        .catch(() => { throw new AuthError('Необходима авторизация'); });
-      res.send({ message: 'Успешная авторизация' });
+        .send({ token });
+    })
+    .catch(() => {
+      throw new AuthError('Необходима авторизация');
     })
     .catch(next);
 };
