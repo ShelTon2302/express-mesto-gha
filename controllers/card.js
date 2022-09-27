@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const RequestError = require('../errors/request-error');
+// const { ObjectID } = require('bson');
 const AccessError = require('../errors/access-error');
 
 module.exports.getCards = (req, res, next) => {
@@ -25,19 +26,19 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  let cardOwner = '';
-  Card.findOneAndRemove({ _id: req.params.cardid, owner: req.user._id })
+  Card.findById(req.params.cardid)
     .orFail()
     .then((card) => {
-      if (card) {
-        cardOwner = card.owner;
-      }
-      res.send({ card });
-    })
-    .catch((err) => {
-      if ((cardOwner !== '') && (cardOwner !== req.user._id)) {
+      if (card.owner.toString() === req.user._id) {
+        const deletedCard = card;
+        card.remove()
+          .catch(next);
+        res.send(deletedCard);
+      } else {
         throw new AccessError('Нарушение прав доступа');
       }
+    })
+    .catch((err) => {
       if (err.name === 'CastError') {
         throw new RequestError('Переданы некорректные данные');
       }
