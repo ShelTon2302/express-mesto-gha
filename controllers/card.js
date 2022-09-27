@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const RequestError = require('../errors/request-error');
+const AccessError = require('../errors/access-error');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -24,12 +25,17 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
+  let cardOwner;
   Card.findOneAndRemove({ _id: req.params.cardid, owner: req.user._id })
     .orFail()
     .then((card) => {
+      cardOwner = card.owner;
       res.send({ card });
     })
     .catch((err) => {
+      if (cardOwner !== req.user._id) {
+        throw new AccessError('Нарушение прав доступа');
+      }
       if (err.name === 'CastError') {
         throw new RequestError('Переданы некорректные данные');
       }
