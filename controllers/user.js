@@ -53,6 +53,7 @@ module.exports.login = (req, res, next) => {
       })
         .end()
         .catch(() => { throw new AuthError('Необходима авторизация'); });
+      res.send({ message: 'Успешная авторизация' });
     })
     .catch(next);
 };
