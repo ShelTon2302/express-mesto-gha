@@ -30,7 +30,6 @@ module.exports.currentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.send(user.toObject()))
     .catch((err) => {
-      console.log(err.code);
       if (err.name === 'CastError') {
         throw new RequestError('Переданы некорректные данные');
       }
