@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
           .catch(next);
         res.send(deletedCard);
       } else {
-        throw new AccessError('Нарушение прав доступа');
+        next(new AccessError('Нарушение прав доступа'));
       }
     })
     .catch((err) => {
