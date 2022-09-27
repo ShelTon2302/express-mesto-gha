@@ -25,15 +25,17 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  let cardOwner;
+  let cardOwner = '';
   Card.findOneAndRemove({ _id: req.params.cardid, owner: req.user._id })
     .orFail()
     .then((card) => {
-      cardOwner = card.owner;
+      if (card) {
+        cardOwner = card.owner;
+      }
       res.send({ card });
     })
     .catch((err) => {
-      if (cardOwner !== req.user._id) {
+      if ((cardOwner !== '') && (cardOwner !== req.user._id)) {
         throw new AccessError('Нарушение прав доступа');
       }
       if (err.name === 'CastError') {
