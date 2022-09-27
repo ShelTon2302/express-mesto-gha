@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardid,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -82,5 +82,6 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         throw new NotFoundError('Запрашиваемая карточка не найдена');
       }
-    });
+    })
+    .catch(next);
 };
