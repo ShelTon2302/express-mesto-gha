@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const RequestError = require('../errors/request-error');
-// const { ObjectID } = require('bson');
 const AccessError = require('../errors/access-error');
 
 module.exports.getCards = (req, res, next) => {
@@ -19,10 +18,11 @@ module.exports.createCard = (req, res, next) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new RequestError('Переданы некорректные данные');
+        next(new RequestError('Переданы некорректные данные'));
+        return;
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -40,13 +40,15 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные');
+        next(new RequestError('Переданы некорректные данные'));
+        return;
       }
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -63,13 +65,15 @@ module.exports.likeCard = (req, res, next) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные');
+        next(new RequestError('Переданы некорректные данные'));
+        return;
       }
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -86,11 +90,13 @@ module.exports.dislikeCard = (req, res, next) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new RequestError('Переданы некорректные данные');
+        next(new RequestError('Переданы некорректные данные'));
+        return;
       }
       if (err.name === 'DocumentNotFoundError') {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
+        next(new NotFoundError('Запрашиваемая карточка не найдена'));
+        return;
       }
-    })
-    .catch(next);
+      next(err);
+    });
 };

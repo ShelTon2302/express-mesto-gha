@@ -53,8 +53,8 @@ app.use('/', cardRouter, (req, res, next) => {
   next();
 });
 
-app.use('/', () => {
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
+app.use('/', (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
 app.use(errors()); // обработчик ошибок celebrate

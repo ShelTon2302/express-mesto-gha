@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
 const validator = require('validator');
 const AuthError = require('../errors/auth-error');
-const RequestError = require('../errors/request-error');
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,6 +9,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: [true, 'Адрес email не уникален'],
+      validate: {
+        validator: (value) => validator.isEmail(value),
+        message: 'Введите корректный email',
+      },
     },
     password: {
       type: String,
@@ -18,22 +21,23 @@ const userSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      //  required: [true, 'Необходимо заполнить имя пользователя'],
       minlength: 2,
       maxlength: 30,
       default: 'Жак-Ив Кусто',
     },
     about: {
       type: String,
-      //  required: [true, 'Необходимо заполнить описание пользователя'],
       minlength: 2,
       maxlength: 30,
       default: 'Исследователь',
     },
     avatar: {
       type: String,
-      //  required: [true, 'Необходимо заполнить ссылку на аватар пользователя'],
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+      validate: {
+        validator: (value) => validator.isURL(value, { protocols: ['http', 'https'] }),
+        message: 'Введите корректный email',
+      },
     },
   },
   {
@@ -60,13 +64,6 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           return user; // теперь user доступен
         });
     });
-};
-
-userSchema.statics.validationEmail = function (email, password) {
-  if (!validator.isEmail(email)) {
-    throw new RequestError('Неверный формат почты');
-  }
-  return bcrypt.hash(password, 10);
 };
 
 // создаём модель и экспортируем её
