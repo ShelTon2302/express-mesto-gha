@@ -3,6 +3,7 @@ const userRouter = require('express').Router(); // создали роутер
 const {
   getAllUser, getUser, currentUser, updateUser, updateAvatar,
 } = require('../controllers/user');
+const { urlRule } = require('../const/const');
 
 userRouter.get('/users', getAllUser);
 
@@ -23,7 +24,7 @@ userRouter.patch('/users/me', celebrate({
 
 userRouter.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(/(^https?:\/\/)(www.)?[a-z0-9-]+\.[a-z]{2,9}[a-z0-9\-\\._~:\\/?#\\[\]@!$&'\\(\\)*\\+,;=]/),
+    avatar: Joi.string().regex(urlRule),
   }),
 }), updateAvatar);
 

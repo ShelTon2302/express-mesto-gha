@@ -7,6 +7,8 @@ require('dotenv').config();
 const auth = require('./middlewares/auth');
 const cardRouter = require('./routes/card');
 const userRouter = require('./routes/user');
+const errorHandler = require('./middlewares/error');
+const { urlRule } = require('./const/const');
 const { login, createUser } = require('./controllers/user');
 const NotFoundError = require('./errors/not-found-error');
 
@@ -39,7 +41,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/(^https?:\/\/)(www.)?[a-z0-9-]+\.[a-z]{2,9}[a-z0-9\-\\._~:\\/?#\\[\]@!$&'\\(\\)*\\+,;=]/),
+    avatar: Joi.string().regex(urlRule),
   }),
 }), createUser);
 
@@ -59,14 +61,6 @@ app.use('/', (req, res, next) => {
 
 app.use(errors()); // обработчик ошибок celebrate
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-    });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT);
